@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-//чекаем hevc кодек в mp4 файле
-func CheckHevc(s string) bool {
-	encType := "ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 " + s
+//чекаем h264 (main) кодек в mp4 файле
+func CheckMain(s string) bool {
+	encType := "ffprobe " + s
 
 	args := strings.Split(encType, " ")
 
@@ -20,9 +20,11 @@ func CheckHevc(s string) bool {
 		log.Printf("Running FFmpeg failed: %v", err)
 	}
 
-	if regexp.MustCompile(`hevc`).MatchString(string(result)) {
+	if regexp.MustCompile(`h264 \S(Main)\S`).MatchString(string(result)) {
 		return true
+
 	} else {
 		return false
+
 	}
 }

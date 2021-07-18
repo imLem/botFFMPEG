@@ -4,6 +4,8 @@ import (
 	"botFFMPEG/actions"
 	"botFFMPEG/checkers"
 	"fmt"
+	"time"
+
 	"regexp"
 	"strings"
 
@@ -12,7 +14,7 @@ import (
 
 // var freeSlot int
 // var queue []string
-var typeMedia = regexp.MustCompile(`.webm`)
+var typeMedia = regexp.MustCompile(`\.webm`)
 
 func EncHandlerWebm(s *discordgo.Session, m *discordgo.MessageCreate) {
 	//отсекаем детект сообщений от самого бота
@@ -35,6 +37,8 @@ func EncHandlerWebm(s *discordgo.Session, m *discordgo.MessageCreate) {
 		massageWaitId := actions.LastIdMessageWebm
 		//очередь для обработки файлов
 		actions.GetQueue(m.ID)
+		//замеряем старт работы с файлом
+		t := time.Now()
 		// определяем тип(ссылка или файл), от этого определяем вложенное сообщение
 		var url string
 		var name string
@@ -43,12 +47,14 @@ func EncHandlerWebm(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if typeMedia.MatchString(nameAtch) {
 			url = urlAtch
 			name = nameAtch
-			message = m.Author.Username + ": " + content + "||оригинал: " + url + "||"
+			message = "(webm)" + m.Author.Username + ": " + content + "||оригинал: " + url + "||"
 		} else {
 			url = urlEmb
 			name = nameEmb
-			message = m.Author.Username + ": " + content
+			message = "(webm)" + m.Author.Username + ": " + content
 		}
+		//логи
+		fmt.Println(actions.LogMessage(name, "start", checkers.CheckMbUrl(url), t, s, m))
 		// преобразуем название в mp4 для ffmpeg
 		newName := strings.Trim(name, ".webm") + ".mp4"
 		// используем ffmpeg в системе, для конвертации
@@ -58,10 +64,13 @@ func EncHandlerWebm(s *discordgo.Session, m *discordgo.MessageCreate) {
 			//в случае фейла делаем ответ с типом операции
 			typeOperation := "webm to mp4"
 			actions.MessageBadAnswer(massageWaitId, typeOperation, s, m)
+			//логи
+			fmt.Println(actions.LogMessage(name, "fail", "0", t, s, m))
 		} else {
+			//логи
+			fmt.Println(actions.LogMessage(name, "complete", checkers.CheckMbFile(m.ID, newName), t, s, m))
 			// отправляем ответ с конвертированным файлом
 			actions.MessageAnswer(newName, massageWaitId, message, s, m)
-			fmt.Println(name + " кейс WEBM завершен")
 		}
 		//выходим из очереди файлов
 		actions.FreeSlot = actions.FreeSlot - 1

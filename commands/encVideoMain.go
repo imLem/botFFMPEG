@@ -11,7 +11,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func EncHandlerHevc(s *discordgo.Session, m *discordgo.MessageCreate) {
+func EncHandlerMain(s *discordgo.Session, m *discordgo.MessageCreate) {
 	//отсекаем детект сообщений от самого бота
 	if m.Author.ID == s.State.User.ID {
 		return
@@ -24,10 +24,10 @@ func EncHandlerHevc(s *discordgo.Session, m *discordgo.MessageCreate) {
 		fileName = atch.Filename
 	}
 	// определяем hevc в mp4 файлах
-	if regexp.MustCompile(`\.mp4`).MatchString(fileName) && checkers.CheckHevc(urlFile) {
-		// даем знать в чат, что hevc определен и записываем айдишку этого меседжа
-		s.ChannelMessageSend(m.ChannelID, "HEVC detected. Wait few moments... :clapper:")
-		massageWaitId := actions.LastIdMessageHevc
+	if regexp.MustCompile(`\.mp4`).MatchString(fileName) && checkers.CheckMain(urlFile) {
+		// даем знать в чат, что main определен и записываем айдишку этого меседжа
+		s.ChannelMessageSend(m.ChannelID, "h264 (main) detected. Wait few moments... :clapper:")
+		massageWaitId := actions.LastIdMessageMain
 		//очередь для обработки файлов
 		actions.GetQueue(m.ID)
 		//замеряем старт работы с файлом
@@ -36,13 +36,13 @@ func EncHandlerHevc(s *discordgo.Session, m *discordgo.MessageCreate) {
 		fmt.Println(actions.LogMessage(fileName, "start", checkers.CheckMbUrl(urlFile), t, s, m))
 		// указываем отправителя и его сообщение(обработанное) с вложенным видео
 		content := actions.NewMesContent(s, m)
-		message := "(hevc)" + m.Author.Username + ": " + content
+		message := "(Main)" + m.Author.Username + ": " + content
 		// используем ffmpeg в системе, для конвертации
-		ffmpeg := "ffmpeg -i " + urlFile + " -vcodec libx264 -acodec aac videos/" + m.ID + "/" + fileName
+		ffmpeg := "ffmpeg -i " + urlFile + " -c:v libx264 -profile:v high -c:a copy videos/" + m.ID + "/" + fileName
 		path := "videos/" + m.ID
 		if !actions.UseFfmpeg(ffmpeg, path) {
 			//в случае фейла делаем ответ с типом операции
-			typeOperation := "hevc to h.264"
+			typeOperation := "h.264 (main) to h.264 (high)"
 			actions.MessageBadAnswer(massageWaitId, typeOperation, s, m)
 			// логи
 			fmt.Println(actions.LogMessage(fileName, "fail", "0", t, s, m))

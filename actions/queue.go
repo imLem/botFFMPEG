@@ -1,7 +1,6 @@
 package actions
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -14,7 +13,6 @@ func GetQueue(messageId string) {
 	for {
 		if FreeSlot < 1 {
 			if len(queue) > 0 && queue[0] == messageId {
-				fmt.Println(queue[0] + " пошел в обработку")
 				queue = queue[1:]
 				FreeSlot = FreeSlot + 1
 				break

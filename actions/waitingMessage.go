@@ -10,6 +10,7 @@ var LastIdMessageWebm string
 var LastIdMessageHevc string
 var LastIdMessageFail string
 var LastIdMessageSize string
+var LastIdMessageMain string
 
 // слушатель сообщения детекта от бота, чтобы запомнить его айдишку
 func WaitMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -19,6 +20,7 @@ func WaitMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	// если сообщение от нашего бота, то проверяем, что он написал и заносим айдишку нужного сообщения
 	webmMessage := regexp.MustCompile(`WEBM`)
+	mainMessage := regexp.MustCompile(`h264`)
 	hevcMessage := regexp.MustCompile(`HEVC`)
 	failMessage := regexp.MustCompile(`fail`)
 	size := regexp.MustCompile(`файл получился`)
@@ -33,5 +35,8 @@ func WaitMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	if size.MatchString(m.Content) {
 		LastIdMessageSize = m.ID
+	}
+	if mainMessage.MatchString(m.Content) {
+		LastIdMessageMain = m.ID
 	}
 }

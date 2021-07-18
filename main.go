@@ -41,6 +41,7 @@ func main() {
 	// колбеки для функций MessageCreate
 	dg.AddHandler(commands.EncHandlerWebm)
 	dg.AddHandler(commands.EncHandlerHevc)
+	dg.AddHandler(commands.EncHandlerMain)
 	dg.AddHandler(actions.WaitMessage)
 	// dg.AddHandler(commands.test22)
 

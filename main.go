@@ -41,10 +41,7 @@ func main() {
 	// колбеки для функций MessageCreate
 	dg.AddHandler(commands.EncHandlerWebm)
 	dg.AddHandler(commands.EncHandlerHevc)
-	dg.AddHandler(commands.EncHandlerMain)
 	dg.AddHandler(actions.WaitMessage)
-	// dg.AddHandler(commands.test22)
-
 	// Обработка сообщений только с серверов
 	dg.Identify.Intents = discordgo.IntentsGuildMessages
 	// Открытие соединение с дискордом

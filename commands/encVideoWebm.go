@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"regexp"
-	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -56,7 +55,7 @@ func EncHandlerWebm(s *discordgo.Session, m *discordgo.MessageCreate) {
 		//логи
 		fmt.Println(actions.LogMessage(name, "start", checkers.CheckMbUrl(url), t, s, m))
 		// преобразуем название в mp4 для ffmpeg
-		newName := strings.Trim(name, ".webm") + ".mp4"
+		newName := name[:(len(name)-5)] + ".mp4"
 		// используем ffmpeg в системе, для конвертации
 		ffmpeg := "ffmpeg -fflags +genpts -i " + url + " -r 24 videos/" + m.ID + "/" + newName
 		path := "videos/" + m.ID

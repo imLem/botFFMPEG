@@ -13,7 +13,7 @@ import (
 // fileName - имя файла, которое будет искаться в дирректории videos должно заканчиваться с форматом, например .mp4
 // massageWaitId - айди сообщения которое было отправлено пользователю как реакция на детект формата, чтобы удалить его
 // message сформированное тело сообщения, которое отправляется с файлом
-func MessageAnswer(fileName, massageWaitId, message string, s *discordgo.Session, m *discordgo.MessageCreate) {
+func MessageAnswer(fileName, messageWaitId, message string, s *discordgo.Session, m *discordgo.MessageCreate) {
 	// сначала определяем бусты на сервер, от этого зависит объем файла, который мы можем отправить
 	boosts := checkers.BoostCheck(s, m)
 	// открываем файл
@@ -30,7 +30,7 @@ func MessageAnswer(fileName, massageWaitId, message string, s *discordgo.Session
 	// если 30 и более, то отправить можно не более 100 мб
 	// если условия подошли, удаляем сообщение пользователя с файлом
 	if (boosts < 15 && sizeFile < 8.0) || (boosts >= 15 && boosts < 30 && sizeFile < 50.0) || (boosts >= 30 && sizeFile < 100.0) {
-		s.ChannelMessageDelete(m.ChannelID, massageWaitId)                 // если условия подошли, удаляем сообщение бота, что был детект
+		s.ChannelMessageDelete(m.ChannelID, messageWaitId)                 // если условия подошли, удаляем сообщение бота, что был детект
 		s.ChannelMessageDelete(m.ChannelID, m.ID)                          // удаляем сообщение пользователя с файлом
 		s.ChannelFileSendWithMessage(m.ChannelID, message, fileName, file) // отправляем конвертированный файл с сообщением
 	}
@@ -46,14 +46,14 @@ func MessageAnswer(fileName, massageWaitId, message string, s *discordgo.Session
 		if sizeFile > 100.0 {
 			sizeAtch = "100"
 		}
-		s.ChannelMessageDelete(m.ChannelID, massageWaitId)
+		s.ChannelMessageDelete(m.ChannelID, messageWaitId)
 		s.ChannelMessageSend(m.ChannelID, "файл получился больше "+sizeAtch+" мегабайт")
-		massageWaitIdsize := LastIdMessageSize
+		messageWaitIdsize := LastIdMessageSize
 		time.Sleep(5 * time.Second)
-		s.ChannelMessageDelete(m.ChannelID, massageWaitIdsize)
-		file.Close()
-		os.RemoveAll("videos/" + m.ID + "/")
-		return
+		s.ChannelMessageDelete(m.ChannelID, messageWaitIdsize)
+		// file.Close()
+		// os.RemoveAll("videos/" + m.ID + "/")
+		// return
 	}
 	//закрываем работу с файлом и удаляем его
 	file.Close()

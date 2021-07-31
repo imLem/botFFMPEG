@@ -33,7 +33,7 @@ func EncHandlerWebm(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if typeMedia.MatchString(nameAtch) || typeMedia.MatchString(nameEmb) {
 		// даем знать в чат, что webm определен и записываем айдишку этого меседжа
 		s.ChannelMessageSend(m.ChannelID, "WEBM detected. Wait few moments... :clapper:")
-		massageWaitId := actions.LastIdMessageWebm
+		messageWaitId := actions.LastIdMessageWebm
 		//очередь для обработки файлов
 		actions.GetQueue(m.ID)
 		//замеряем старт работы с файлом
@@ -62,14 +62,14 @@ func EncHandlerWebm(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if !actions.UseFfmpeg(ffmpeg, path) {
 			//в случае фейла делаем ответ с типом операции
 			typeOperation := "webm to mp4"
-			actions.MessageBadAnswer(massageWaitId, typeOperation, s, m)
+			actions.MessageBadAnswer(messageWaitId, typeOperation, s, m)
 			//логи
 			fmt.Println(actions.LogMessage(name, "fail", "0", t, s, m))
 		} else {
 			//логи
 			fmt.Println(actions.LogMessage(name, "complete", checkers.CheckMbFile(m.ID, newName), t, s, m))
 			// отправляем ответ с конвертированным файлом
-			actions.MessageAnswer(newName, massageWaitId, message, s, m)
+			actions.MessageAnswer(newName, messageWaitId, message, s, m)
 		}
 		//выходим из очереди файлов
 		actions.FreeSlot = actions.FreeSlot - 1

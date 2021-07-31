@@ -7,13 +7,13 @@ import (
 )
 
 //если не получается конвертировать файл делаем бед ответ
-func MessageBadAnswer(massageWaitId, typeOperation string, s *discordgo.Session, m *discordgo.MessageCreate) {
+func MessageBadAnswer(messageWaitId, typeOperation string, s *discordgo.Session, m *discordgo.MessageCreate) {
 	//удаляем сообщение с детектом
-	s.ChannelMessageDelete(m.ChannelID, massageWaitId)
+	s.ChannelMessageDelete(m.ChannelID, messageWaitId)
 	//даем знать что произошел фейл
 	s.ChannelMessageSend(m.ChannelID, typeOperation+" failed")
-	massageWaitId2 := LastIdMessageFail
+	messageWaitId2 := LastIdMessageFail
 	//ожидаем 5 секунд и удаляем сообщение о фейле
 	time.Sleep(5 * time.Second)
-	s.ChannelMessageDelete(m.ChannelID, massageWaitId2)
+	s.ChannelMessageDelete(m.ChannelID, messageWaitId2)
 }
